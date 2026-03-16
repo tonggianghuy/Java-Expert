@@ -1,0 +1,69 @@
+version: '3.8'
+
+# Docker Compose cho Phase 3: Banking + Ecommerce + PostgreSQL
+# Chạy: docker-compose up --build
+
+services:
+  # ============================================================
+  # PostgreSQL Database
+  # ============================================================
+  db:
+    image: postgres:15-alpine
+    container_name: banking-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d appdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================
+  # Banking API (Java / Spring Boot)
+  # ============================================================
+  banking-api:
+    build: ./banking-app
+    container_name: banking-api
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/appdb
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password123
+      JWT_SECRET: docker-banking-jwt-secret-key-2024
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ============================================================
+  # Ecommerce API (TypeScript / NestJS)
+  # ============================================================
+  ecommerce-api:
+    build: ./ecommerce-app
+    container_name: ecommerce-api
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: appdb
+      DB_USER: admin
+      DB_PASSWORD: password123
+      JWT_SECRET: docker-ecommerce-jwt-secret-key-2024
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+    driver: local

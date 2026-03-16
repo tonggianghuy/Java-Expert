@@ -1,0 +1,57 @@
+# === Java ===
+*.class
+*.jar
+*.war
+*.ear
+target/
+!.mvn/wrapper/maven-wrapper.jar
+build/
+
+# === TypeScript / Node.js ===
+node_modules/
+dist/
+*.js.map
+*.tsbuildinfo
+.npm
+
+# === IDE ===
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# === Environment & Secrets ===
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+credentials.json
+application-secret.yml
+secrets/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# === Logs ===
+logs/
+*.log
+npm-debug.log*
+
+# === Database ===
+*.db
+*.sqlite
+*.h2.db
+
+# === Docker ===
+docker-compose.override.yml
+
+# === Test Coverage ===
+coverage/
+*.lcov
+htmlcov/
